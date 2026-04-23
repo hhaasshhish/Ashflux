@@ -11,7 +11,6 @@
     <style>
         :root {
             --emerald: #00ff9f;
-            --dark-blue: #0f172a;
             --deep-black: #0a0a0f;
         }
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -24,10 +23,9 @@
         }
         .cinematic-text {
             font-family: 'Playfair Display', serif;
-            letter-spacing: -1px;
+            letter-spacing: -2px;
         }
 
-        /* Loader */
         .loader {
             position: fixed;
             inset: 0;
@@ -45,7 +43,6 @@
             font-weight: 300;
         }
 
-        /* Navigation */
         nav {
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -54,7 +51,7 @@
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            background: rgba(10,10,15,0.9);
+            background: rgba(10,10,15,0.92);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(0,255,159,0.1);
         }
@@ -80,7 +77,6 @@
         }
         .nav-links a:hover { color: #00ff9f; }
 
-        /* Hero */
         .hero {
             min-height: 100vh;
             display: flex;
@@ -99,19 +95,22 @@
         .hero-content {
             position: relative;
             z-index: 2;
-            max-width: 920px;
+            max-width: 1100px;
             padding: 0 20px;
+            width: 100%;
         }
         .hero h1 {
-            font-size: clamp(3.8rem, 10vw, 8.5rem);
+            font-size: clamp(3.2rem, 9vw, 7.8rem);
             font-weight: 700;
             line-height: 1.05;
-            background: linear-gradient(135deg, #ffffff, #00ff9f, #3b82f6);
+            background: linear-gradient(90deg, #00ff9f, #3b82f6);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             margin-bottom: 1.2rem;
-            letter-spacing: -4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .tagline {
             font-size: 1.35rem;
@@ -125,11 +124,11 @@
             max-width: 720px;
             margin: 0 auto 3rem;
             color: #cbd5e1;
-            min-height: 120px;
-            line-height: 1.8;
+            min-height: 140px;
+            line-height: 1.85;
+            text-align: left;
         }
 
-        /* Sections */
         section { padding: 120px 6%; position: relative; }
         .section-title {
             font-size: clamp(2.6rem, 6vw, 4rem);
@@ -237,18 +236,18 @@
     <div class="hero">
         <div id="canvas-container"></div>
         <div class="hero-content">
-            <h1 class="cinematic-text">ASHIX<br>AESTHATICS</h1>
+            <h1 class="cinematic-text">AESTHATICS</h1>
             <div class="tagline glow-emerald">Think Reality. Visualize the Hidden Talent.</div>
             
             <div class="typewriter" id="typewriter"></div>
             
-            <a href="#vision" class="cta-button" style="background:rgba(0,255,159,0.1); border:1px solid #00ff9f; color:#00ff9f; padding:1rem 2.5rem; border-radius:50px; text-decoration:none; display:inline-flex; align-items:center; gap:10px; margin-top:1rem;">
+            <a href="#vision" style="background:rgba(0,255,159,0.1); border:1px solid #00ff9f; color:#00ff9f; padding:1rem 2.5rem; border-radius:50px; text-decoration:none; display:inline-flex; align-items:center; gap:10px; margin-top:1rem; font-weight:600;">
                 Begin the Journey <i class="fas fa-arrow-down"></i>
             </a>
         </div>
     </div>
 
-    <!-- Vision Section -->
+    <!-- Vision -->
     <section id="vision">
         <h2 class="section-title">The Vision</h2>
         <div style="max-width:820px; margin:0 auto; text-align:center; font-size:1.25rem; color:#cbd5e1;">
@@ -269,7 +268,7 @@
         <div class="grid" id="writing-grid"></div>
     </section>
 
-    <!-- Dream Section -->
+    <!-- Dream -->
     <section id="dream" style="background: linear-gradient(180deg, #0a0a0f, #0f172a);">
         <div style="max-width:900px; margin:0 auto; text-align:center;">
             <h2 class="section-title" style="margin-bottom:2rem;">My Ultimate Dream</h2>
@@ -289,7 +288,7 @@
         <h2 class="section-title">Let’s Create Something Cinematic</h2>
         <div style="max-width:520px; margin:0 auto; text-align:center;">
             <p style="font-size:1.2rem; margin-bottom:2.5rem; color:#94a3b8;">Ready to turn imagination into reality?</p>
-            <a href="mailto:ashish@ashixaesthetics.com" class="cta-button" style="background:#00ff9f; color:#0a0a0f; font-weight:700; padding:1.1rem 3rem; border-radius:50px; text-decoration:none; display:inline-flex; align-items:center; gap:12px;">
+            <a href="mailto:ashish@ashixaesthetics.com" style="background:#00ff9f; color:#0a0a0f; font-weight:700; padding:1.1rem 3rem; border-radius:50px; text-decoration:none; display:inline-flex; align-items:center; gap:12px;">
                 Start a Conversation <i class="fas fa-envelope"></i>
             </a>
         </div>
@@ -307,7 +306,6 @@
         </div>
     </div>
 
-    <!-- Three.js -->
     <script type="importmap">
         {
             "imports": {
@@ -350,7 +348,6 @@
             orbs.push(orb);
         }
 
-        // Ambient + Point Lights
         scene.add(new THREE.AmbientLight(0x334455, 0.8));
         const pointLight = new THREE.PointLight(0x00ff9f, 1.5, 120);
         pointLight.position.set(15, 20, 10);
@@ -360,12 +357,10 @@
         function animateCinematic() {
             requestAnimationFrame(animateCinematic);
             time += 0.004;
-
             orbs.forEach((orb, i) => {
                 orb.position.y += Math.sin(time + i) * 0.008;
                 orb.rotation.y = time * (0.2 + i * 0.03);
             });
-
             camera.position.x = Math.sin(time * 0.3) * 1.5;
             camera.lookAt(0, 0, 0);
             renderer.render(scene, camera);
@@ -378,10 +373,10 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
 
-        // ==================== TYPEWRITER EFFECT ====================
-        const typewriterText = `I am Ashish Singh Thakur, a Pseudo Mechanical Engineer with a mind full of thinking and creativity. Now I have started turning those thoughts into reality — learning how to interconnect everything. My ultimate dream is to become a Virtual Production Artist, creating 100% cinematic movies using rendered characters and objects with strong, engaging storylines.`;
+        // ==================== TYPEWRITER ====================
+        const typewriterText = `I am Ashish Singh Thakur, a Pseudo Mechanical Engineer with a mind full of thinking and creativity. Now I have started turning those thoughts into reality, learning how to interconnect everything. My ultimate dream is to become a Virtual Production Artist, creating 100% cinematic movies using rendered characters and objects with strong, engaging storylines.`;
         
-        function typeWriter(element, text, speed = 28) {
+        function typeWriter(element, text, speed = 26) {
             let i = 0;
             element.innerHTML = '';
             const interval = setInterval(() => {
@@ -394,36 +389,16 @@
             }, speed);
         }
 
-        // ==================== CONTENT DATA ====================
+        // ==================== DATA ====================
         let worksData = [
-            {
-                id: 1,
-                title: "Echoes of Tomorrow",
-                description: "A cinematic short film exploring memory, time, and human connection through rendered environments.",
-                image_url: "https://picsum.photos/id/1015/800/600",
-                category: "Film",
-                link: "#"
-            },
-            {
-                id: 2,
-                title: "The Last Signal",
-                description: "Interactive narrative experience blending 3D environments with emotional storytelling.",
-                image_url: "https://picsum.photos/id/201/800/600",
-                category: "Interactive",
-                link: "#"
-            }
+            { id:1, title:"Echoes of Tomorrow", description:"A cinematic short film exploring memory, time, and human connection through rendered environments.", image_url:"https://picsum.photos/id/1015/800/600", category:"Film" },
+            { id:2, title:"The Last Signal", description:"Interactive narrative experience blending 3D environments with emotional storytelling.", image_url:"https://picsum.photos/id/201/800/600", category:"Interactive" }
         ];
 
         let writingData = [
-            {
-                id: 1,
-                title: "The Geometry of Emotion",
-                excerpt: "How cinematic composition and lighting can translate invisible human feelings into visual poetry.",
-                icon: "fa-pen-nib"
-            }
+            { id:1, title:"The Geometry of Emotion", excerpt:"How cinematic composition and lighting can translate invisible human feelings into visual poetry.", icon:"fa-pen-nib" }
         ];
 
-        // Render functions
         function renderWorks() {
             const grid = document.getElementById('works-grid');
             grid.innerHTML = worksData.map(w => `
@@ -453,7 +428,6 @@
             `).join('');
         }
 
-        // Modal
         window.openModal = function(type, id) {
             const modal = document.getElementById('project-modal');
             const content = document.getElementById('modal-content');
@@ -469,7 +443,6 @@
                         <h2 style="font-size:2.4rem; margin-bottom:1.5rem;">${item.title}</h2>
                         <img src="${item.image_url}" style="width:100%; border-radius:18px; margin-bottom:2rem; box-shadow:0 20px 60px rgba(0,0,0,0.4);">
                         <p style="font-size:1.15rem; line-height:1.85; color:#e2e8f0;">${item.description}</p>
-                        ${item.link ? `<a href="${item.link}" target="_blank" style="display:inline-block; margin-top:2rem; color:#00ff9f; text-decoration:none; font-weight:600;">View Project →</a>` : ''}
                     </div>
                 `;
             } else if (type === 'writing') {
@@ -490,12 +463,10 @@
             document.getElementById('project-modal').style.display = 'none';
         };
 
-        // Mobile menu
         document.getElementById('menu-btn').addEventListener('click', () => {
             document.getElementById('nav-links').classList.toggle('active');
         });
 
-        // Smooth scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -505,26 +476,21 @@
             });
         });
 
-        // Final initialization
         window.addEventListener('load', () => {
-            // Safety loader timeout
             setTimeout(() => {
                 const loader = document.getElementById('loader');
                 loader.style.opacity = '0';
                 setTimeout(() => loader.remove(), 900);
             }, 1300);
 
-            // Render content
             renderWorks();
             renderWriting();
 
-            // Start typewriter after loader
             setTimeout(() => {
                 const tw = document.getElementById('typewriter');
                 typeWriter(tw, typewriterText, 26);
             }, 1800);
 
-            // GSAP Scroll Animations
             gsap.registerPlugin(ScrollTrigger);
             gsap.from('.section-title', {
                 scrollTrigger: { trigger: '.section-title', start: 'top 80%' },
@@ -535,7 +501,7 @@
                 y: 80, opacity: 0, duration: 0.9, stagger: 0.12, ease: 'power3.out'
             });
 
-            console.log('%c✅ ASHIX AESTHATICS loaded successfully', 'color:#00ff9f; font-family:monospace');
+            console.log('%c✅ ASHIX AESTHATICS loaded successfully (Fixed)', 'color:#00ff9f; font-family:monospace');
         });
     </script>
 </body>
