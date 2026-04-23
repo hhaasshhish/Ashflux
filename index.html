@@ -2,204 +2,603 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>World with Aashish</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>LUMINA STUDIO — Creative Portfolio</title>
+
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- GSAP & ScrollTrigger for smooth, snappy animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <!-- Three.js & OrbitControls -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050505;
+            color: #f0f0f0;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Loading Screen */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+        .loader-text {
+            font-size: 1.5rem;
+            letter-spacing: 4px;
+            font-weight: 300;
+            background: linear-gradient(135deg, #fff, #888);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(5,5,5,0.7);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff, #aaa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .nav-links a {
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            font-size: 1rem;
+        }
+        .nav-links a:hover {
+            color: white;
+        }
+        .menu-btn {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: 2rem;
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 6rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff, #aaa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: #ccc;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 40px;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(5px);
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .cta-button:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.4);
+            transform: scale(1.05);
+        }
+
+        /* Sections */
+        section {
+            padding: 100px 5%;
+            position: relative;
+        }
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 600;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        /* Work Grid */
+        .work-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .work-card {
+            background: rgba(20,20,20,0.6);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .work-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border-color: rgba(255,255,255,0.1);
+        }
+        .work-img {
+            width: 100%;
+            height: 240px;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+        .work-info {
+            padding: 1.5rem;
+        }
+        .work-info h3 {
+            margin-bottom: 0.5rem;
+        }
+        .work-info p {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        /* Models Grid */
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .model-card {
+            background: rgba(20,20,20,0.6);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s ease;
+            aspect-ratio: 1 / 0.9;
+            position: relative;
+        }
+        .model-card:hover {
+            transform: translateY(-10px);
+        }
+        .model-card canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Writing Grid */
+        .writing-grid, .fonts-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .writing-card {
+            background: rgba(20,20,20,0.6);
+            padding: 1.5rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s ease;
+        }
+        .writing-card:hover {
+            transform: translateY(-5px);
+        }
+        .font-card {
+            background: rgba(20,20,20,0.6);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .font-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            background: rgba(10,10,10,0.9);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .admin-panel h3 {
+            margin-bottom: 1.5rem;
+        }
+        .admin-form input, .admin-form textarea, .admin-form select {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: rgba(30,30,30,0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: white;
+            font-family: inherit;
+        }
+        .admin-form button {
+            background: linear-gradient(135deg, #fff, #aaa);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        .admin-form button:hover {
+            opacity: 0.8;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            .menu-btn {
+                display: block;
+            }
+            section {
+                padding: 60px 5%;
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <header id="header">
-        <nav class="navbar">
-            <div class="container">
-                <a href="#home" class="nav-logo">World with Aashish</a>
-                <ul class="nav-menu">
-                    <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
-                    <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
-                    <li class="nav-item"><a href="#observations" class="nav-link">Observations</a></li>
-                    <li class="nav-item"><a href="#portfolio" class="nav-link">Portfolio</a></li>
-                    <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
-                </ul>
-                <div class="hamburger">
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                </div>
-            </div>
-        </nav>
-    </header>
+<div class="loader" id="loader"><div class="loader-text">LOADING CREATIVE STUDIO...</div></div>
 
-    <main>
-        <section id="home" class="section section-home">
-            <div class="overlay"></div>
-            <div class="container hero-content">
-                <h1>Exploring Perspectives</h1>
-                <p class="subtitle">A Journey Through Ideas, Technology, and Human Experience with Aashish Singh Thakur</p>
-                <a href="#about" class="btn btn-primary">Learn More About Me</a>
-            </div>
-        </section>
+<nav>
+    <div class="logo">LUMINA</div>
+    <div class="nav-links">
+        <a href="#work">Work</a>
+        <a href="#models">3D Models</a>
+        <a href="#writing">Writing</a>
+        <a href="#fonts">Fonts</a>
+        <a href="#admin">Studio Admin</a>
+    </div>
+    <div class="menu-btn"><i class="fas fa-bars"></i></div>
+</nav>
 
-        <section id="about" class="section section-about">
-            <div class="container">
-                <h2>About Me</h2>
-                <div class="about-content">
-                    <div class="about-image">
-                        <img src="placeholder-profile.jpg" alt="Aashish Singh Thakur">
-                    </div>
-                    <div class="about-text">
-                        <h3>Hello! I'm Aashish Singh Thakur</h3>
-                        <p>My professional journey through mechanical contracting and creative technology has ignited a deep curiosity within me—not just about physical machines, but about the intricate mechanics of our world: the systems of society, the evolution of technology, and the complexities of human behaviour.</p>
-                        <p>This website stems from that curiosity. It's a space where I explore and share observations on diverse human experiences – our thoughts, dreams, and collective impact on the global stage. I delve into the dynamics of failure and success, wealth and poverty, and how technology shapes our lives across generations.</p>
-                        <p>Here, I aim to scientifically dissect complex issues, understand the driving forces behind societal trends, analyze prevailing ideologies, and explore how we can navigate our world more effectively. Join me in this exploration of growth, economics, social psychology, and the fundamental forces shaping our shared future.</p>
-                        </div>
-                </div>
-            </div>
-        </section>
+<div class="hero">
+    <div id="canvas-container"></div>
+    <div class="hero-content">
+        <h1>Where Creativity<br>Meets Code</h1>
+        <p>Immersive 3D experiences and design that feels alive.</p>
+        <a href="#work" class="cta-button">Explore My Universe →</a>
+    </div>
+</div>
 
-        <section id="observations" class="section section-observations">
-            <div class="overlay"></div>
-            <div class="container">
-                <h2>Observations & Analysis</h2>
-                <p class="section-intro">Thoughts on society, technology, ideologies, and the human condition.</p>
-                <div class="observations-grid">
-                    <div class="observation-card card">
-                         <div class="card-icon"><i class="fas fa-users-gear"></i></div>
-                        <div class="card-content">
-                            <h3>Generational Dynamics</h3>
-                            <p>Exploring the unique perspectives, values, communication styles, and potential friction points between different generations in our rapidly changing world.</p>
-                             <article class="observation-post-preview">
-                                <h4><a href="#">Analysis: Bridging the Generational Gap</a></h4>
-                                <p>Insights into understanding and navigating the discrepancies between new and older generations...</p>
-                                <span class="post-date">[Date]</span>
-                            </article>
-                            </div>
-                    </div>
-                    <div class="observation-card card">
-                         <div class="card-icon"><i class="fas fa-flag"></i></div>
-                         <div class="card-content">
-                            <h3>Ideological Conflicts</h3>
-                            <p>Examining the roots and consequences of conflicting ideologies, their role in shaping current events, and the challenges they pose to social cohesion.</p>
-                            <article class="observation-post-preview">
-                                <h4><a href="#">Deep Dive: Ideology as a Source of Conflict</a></h4>
-                                <p>How differing worldviews are becoming common drivers of disputes and riots globally...</p>
-                                 <span class="post-date">[Date]</span>
-                            </article>
-                            </div>
-                    </div>
-                     <div class="observation-card card">
-                        <div class="card-icon"><i class="fas fa-microchip"></i></div>
-                        <div class="card-content">
-                            <h3>Technology's Impact</h3>
-                            <p>The pervasive influence of technology on our daily lives, social structures, economies, and future trajectories. Both opportunities and challenges.</p>
-                             <article class="observation-post-preview">
-                                <h4><a href="#">Article: The Double-Edged Sword of AI</a></h4>
-                                <p>Exploring the benefits and potential risks of artificial intelligence advancements...</p>
-                                 <span class="post-date">[Date]</span>
-                            </article>
-                        </div>
-                    </div>
-                     <div class="observation-card card">
-                         <div class="card-icon"><i class="fas fa-chart-line"></i></div>
-                          <div class="card-content">
-                            <h3>Success, Failure & Growth</h3>
-                            <p>Reflections on the nature of success and failure, the psychology of ambition, economic disparity, and the journey of personal and societal growth.</p>
-                             <article class="observation-post-preview">
-                                <h4><a href="#">Reflection: Learning from Setbacks</a></h4>
-                                <p>Understanding failure not as an endpoint, but as a catalyst for growth...</p>
-                                 <span class="post-date">[Date]</span>
-                            </article>
-                         </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<section id="work"><h2 class="section-title">Featured Work</h2><div class="work-grid" id="work-grid"></div></section>
+<section id="models"><h2 class="section-title">3D Explorations</h2><div class="models-grid" id="models-grid"></div></section>
+<section id="writing"><h2 class="section-title">Creative Writing</h2><div class="writing-grid" id="writing-grid"></div></section>
+<section id="fonts"><h2 class="section-title">Typography Lab</h2><div class="fonts-showcase" id="fonts-showcase"></div></section>
 
-        <section id="portfolio" class="section section-portfolio">
-            <div class="container">
-                <h2>Portfolio</h2>
-                <p class="section-intro">A selection of projects and works (Content Coming Soon).</p>
-                <div class="portfolio-grid">
-                    <div class="portfolio-item">
-                        <img src="placeholder-project1.jpg" alt="Project 1 Placeholder">
-                        <div class="portfolio-info">
-                            <h3>Project Title 1</h3>
-                            <p>Brief description of the project will go here. Highlighting key skills or outcomes.</p>
-                            <a href="#" class="btn btn-secondary">View Details</a>
-                        </div>
-                    </div>
-                     <div class="portfolio-item">
-                        <img src="placeholder-project2.jpg" alt="Project 2 Placeholder">
-                        <div class="portfolio-info">
-                            <h3>Project Title 2</h3>
-                            <p>Brief description of the project will go here. Highlighting key skills or outcomes.</p>
-                             <a href="#" class="btn btn-secondary">View Details</a>
-                        </div>
-                    </div>
-                     <div class="portfolio-item">
-                        <img src="placeholder-project3.jpg" alt="Project 3 Placeholder">
-                        <div class="portfolio-info">
-                            <h3>Project Title 3</h3>
-                            <p>Brief description of the project will go here. Highlighting key skills or outcomes.</p>
-                             <a href="#" class="btn btn-secondary">View Details</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<section id="admin">
+    <h2 class="section-title">Studio Admin Panel</h2>
+    <div class="admin-panel">
+        <h3>Upload New Creative Work</h3>
+        <form id="upload-form" class="admin-form">
+            <select id="content-type" required><option value="work">Design Work</option><option value="model">3D Model</option><option value="writing">Writing Piece</option><option value="font">Custom Font</option></select>
+            <input type="text" id="title" placeholder="Title" required>
+            <textarea id="description" placeholder="Description" rows="3"></textarea>
+            <input type="text" id="image-icon" placeholder="Icon (FontAwesome class, e.g., fa-palette)">
+            <button type="submit">Upload to Portfolio</button>
+        </form>
+    </div>
+</section>
 
-         <section id="contact" class="section section-contact">
-             <div class="container">
-                <h2>Get In Touch</h2>
-                <p class="section-intro">Interested in collaborating, discussing ideas, or just want to connect? Reach out!</p>
-                <div class="contact-content">
-                    <div class="contact-info">
-                        <h3>Contact Information</h3>
-                        <p><i class="fas fa-envelope"></i> Email: <a href="mailto:ashishsingh.sing501@gmail.com">ashishsingh.sing501@gmail.com</a></p>
-                        <p><i class="fab fa-instagram"></i> Instagram: <a href="https://www.instagram.com/aasshhish/" target="_blank">@aasshhish</a></p>
-                        <p><i class="fab fa-twitter"></i> X (Twitter): <a href="https://twitter.com/lostmypixel" target="_blank">@lostmypixel</a></p>
-                        <p><i class="fas fa-map-marker-alt"></i> Location: Raipur, Chhattisgarh, India</p>
-                    </div>
-                    <div class="contact-form-container">
-                         <h3>Send a Message:</h3>
-                         <form id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-                            <div class="form-group">
-                                <label for="name">Name:</label>
-                                <input type="text" id="name" name="name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="email">Email:</label>
-                                <input type="email" id="email" name="email" required>
-                            </div>
-                             <div class="form-group">
-                                <label for="subject">Subject:</label>
-                                <input type="text" id="subject" name="subject">
-                            </div>
-                            <div class="form-group">
-                                <label for="message">Message:</label>
-                                <textarea id="message" name="message" rows="5" required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Send Message <i class="fas fa-paper-plane"></i></button>
-                        </form>
-                         <p id="form-status"></p> </div>
-                </div>
-            </div>
-        </section>
-    </main>
+<footer><p>© 2025 LUMINA STUDIO — Immersive Creative Portfolio</p></footer>
 
-    <footer id="footer">
-        <div class="container">
-            <div class="social-links">
-                 <a href="https://www.instagram.com/aasshhish/" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                 <a href="https://twitter.com/lostmypixel" target="_blank" aria-label="X (Twitter)"><i class="fab fa-twitter"></i></a>
-                 <a href="mailto:ashishsingh.sing501@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
-            </div>
-            <p>&copy; <span id="current-year"></span> World with Aashish. All rights reserved.</p>
-            <p>Exploring ideas from Raipur, India.</p>
-        </div>
-    </footer>
-
-    <a href="#" class="back-to-top"><i class="fas fa-arrow-up"></i></a>
-
-    <script src="script.js"></script>
+<script type="module">
+    // --- THREE.JS BACKGROUND (Immersive Particle System) ---
+    import * as THREE from 'three';
+    
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x050505);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 0, 15);
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    container.appendChild(renderer.domElement);
+    
+    const particlesGeometry = new THREE.BufferGeometry();
+    const particlesCount = 1500;
+    const posArray = new Float32Array(particlesCount * 3);
+    for(let i = 0; i < particlesCount * 3; i += 3) {
+        posArray[i] = (Math.random() - 0.5) * 40;
+        posArray[i+1] = (Math.random() - 0.5) * 20;
+        posArray[i+2] = (Math.random() - 0.5) * 30 - 10;
+    }
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const particlesMaterial = new THREE.PointsMaterial({ size: 0.08, color: 0xffffff, transparent: true, opacity: 0.6 });
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+    
+    const geometry = new THREE.IcosahedronGeometry(1.2, 0);
+    const material = new THREE.MeshStandardMaterial({ color: 0xffffff, wireframe: true, emissive: 0x222222 });
+    const wireframeObj = new THREE.Mesh(geometry, material);
+    scene.add(wireframeObj);
+    
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    scene.add(ambientLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(1, 2, 3);
+    scene.add(directionalLight);
+    const backLight = new THREE.PointLight(0x4444ff, 0.5);
+    backLight.position.set(-2, 1, -3);
+    scene.add(backLight);
+    
+    let time = 0;
+    function animateBackground() {
+        requestAnimationFrame(animateBackground);
+        time += 0.005;
+        particlesMesh.rotation.y = time * 0.05;
+        particlesMesh.rotation.x = time * 0.03;
+        wireframeObj.rotation.x = time * 0.2;
+        wireframeObj.rotation.y = time * 0.3;
+        camera.position.z = 15 + Math.sin(time * 0.3) * 0.2;
+        renderer.render(scene, camera);
+    }
+    animateBackground();
+    
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    
+    // --- GSAP ANIMATIONS (Snappy & Responsive) ---
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.from('.hero h1', { duration: 1.2, y: 50, opacity: 0, ease: 'power3.out' });
+    gsap.from('.hero p', { duration: 1, y: 30, opacity: 0, delay: 0.3 });
+    gsap.from('.cta-button', { duration: 0.8, scale: 0.8, opacity: 0, delay: 0.6 });
+    gsap.utils.toArray('section').forEach(section => {
+        gsap.from(section, {
+            scrollTrigger: { trigger: section, start: 'top 80%', toggleActions: 'play none none reverse' },
+            opacity: 0, y: 50, duration: 0.8
+        });
+    });
+    
+    // --- 3D MODEL VIEWER (OrbitControls + Model Loading) ---
+    let activeModels = [];
+    const modelData = [
+        { id: 0, title: "Abstract Core", description: "Geometric exploration", objectPath: "https://threejs.org/examples/models/gltf/Flamingo.gltf", icon: "fa-cube" },
+        { id: 1, title: "Dreamscape", description: "Low-poly fantasy environment", objectPath: "https://threejs.org/examples/models/gltf/Parrot.glb", icon: "fa-tree" }
+    ];
+    
+    function initModelViewer(canvasId, objectPath) {
+        const canvasContainer = document.getElementById(canvasId);
+        if (!canvasContainer) return null;
+        const width = canvasContainer.clientWidth;
+        const height = canvasContainer.clientHeight;
+        const modelScene = new THREE.Scene();
+        modelScene.background = new THREE.Color(0x0a0a0a);
+        const modelCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+        modelCamera.position.set(2, 2, 5);
+        modelCamera.lookAt(0, 0, 0);
+        const modelRenderer = new THREE.WebGLRenderer({ antialias: true });
+        modelRenderer.setSize(width, height);
+        canvasContainer.appendChild(modelRenderer.domElement);
+        
+        const controls = new THREE.OrbitControls(modelCamera, modelRenderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 1.0;
+        controls.enableZoom = true;
+        controls.enablePan = false;
+        
+        const ambientLightM = new THREE.AmbientLight(0x404060);
+        modelScene.add(ambientLightM);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+        dirLight.position.set(1, 2, 1);
+        modelScene.add(dirLight);
+        const backLightM = new THREE.PointLight(0x4466cc, 0.5);
+        backLightM.position.set(-1, 1, -2);
+        modelScene.add(backLightM);
+        
+        const loader = new THREE.GLTFLoader();
+        loader.load(objectPath, (gltf) => {
+            const model = gltf.scene;
+            model.scale.set(1.5, 1.5, 1.5);
+            modelScene.add(model);
+        }, undefined, (error) => { console.error('Model load error:', error); });
+        
+        function animateModel() {
+            requestAnimationFrame(animateModel);
+            controls.update();
+            modelRenderer.render(modelScene, modelCamera);
+        }
+        animateModel();
+        
+        window.addEventListener('resize', () => {
+            const newWidth = canvasContainer.clientWidth;
+            const newHeight = canvasContainer.clientHeight;
+            modelCamera.aspect = newWidth / newHeight;
+            modelCamera.updateProjectionMatrix();
+            modelRenderer.setSize(newWidth, newHeight);
+        });
+        return controls;
+    }
+    
+    // Render Models Grid
+    function renderModels() {
+        const containerDiv = document.getElementById('models-grid');
+        if (!containerDiv) return;
+        containerDiv.innerHTML = '';
+        modelData.forEach((model, idx) => {
+            const card = document.createElement('div');
+            card.className = 'model-card';
+            card.innerHTML = `<div class="model-info" style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); padding: 0.75rem; z-index: 2;"><h3>${model.title}</h3><p style="font-size:0.8rem;">${model.description}</p></div>`;
+            const canvasWrapper = document.createElement('div');
+            canvasWrapper.id = `model-canvas-${idx}`;
+            canvasWrapper.style.width = '100%';
+            canvasWrapper.style.height = '100%';
+            canvasWrapper.style.position = 'relative';
+            card.prepend(canvasWrapper);
+            containerDiv.appendChild(card);
+            setTimeout(() => initModelViewer(`model-canvas-${idx}`, model.objectPath), 100);
+        });
+    }
+    
+    import * as THREE_EXT from 'three/addons/';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    window.OrbitControls = OrbitControls;
+    window.GLTFLoader = GLTFLoader;
+    window.THREE_EXT = THREE_EXT;
+    
+    // --- LOCAL STORAGE (Work, Writing, Fonts) ---
+    let portfolioData = JSON.parse(localStorage.getItem('lumina_portfolio')) || {
+        work: [{ title: "Nebula Identity", description: "Brand identity for a futuristic art collective.", icon: "fa-palette" },{ title: "Liquid Motion", description: "WebGL fluid simulation + GSAP scroll narrative.", icon: "fa-water" },{ title: "Kinetic Typo", description: "Experimental typography with Three.js shaders.", icon: "fa-font" }],
+        writing: [{ title: "The Algorithmic Muse", description: "Essay on AI in creative fields.", icon: "fa-pen-nib", content: "Full essay content here..." },{ title: "Silicon Dreams", description: "Short story about digital consciousness.", icon: "fa-book-open", content: "Story content..." }],
+        fonts: [{ name: "NEBULA SANS", description: "Geometric sans with cosmic flair.", icon: "fa-typewriter" },{ name: "VOID SERIF", description: "Elegant serif for immersive reading.", icon: "fa-italic" }]
+    };
+    
+    function renderWork() { const container = document.getElementById('work-grid');
+        if(!container) return;
+        container.innerHTML = portfolioData.work.map(item => `<div class="work-card"><div class="work-img"><i class="fas ${item.icon || 'fa-palette'} fa-3x" style="color:#fff;"></i></div><div class="work-info"><h3>${item.title}</h3><p>${item.description}</p></div></div>`).join('');
+    }
+    function renderWriting() { const container = document.getElementById('writing-grid');
+        if(!container) return;
+        container.innerHTML = portfolioData.writing.map(item => `<div class="writing-card"><i class="fas ${item.icon || 'fa-pen-fancy'} fa-2x" style="margin-bottom: 1rem; display: inline-block;"></i><h3>${item.title}</h3><p>${item.description}</p></div>`).join('');
+    }
+    function renderFonts() { const container = document.getElementById('fonts-showcase');
+        if(!container) return;
+        container.innerHTML = portfolioData.fonts.map(font => `<div class="font-card"><i class="fas ${font.icon || 'fa-font'} fa-3x" style="margin-bottom: 1rem;"></i><h3 style="font-family: 'Space Grotesk', monospace;">${font.name}</h3><p>${font.description}</p></div>`).join('');
+    }
+    
+    function saveAndRender() {
+        localStorage.setItem('lumina_portfolio', JSON.stringify(portfolioData));
+        renderWork(); renderWriting(); renderFonts();
+        setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 100);
+    }
+    
+    document.getElementById('upload-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const type = document.getElementById('content-type').value;
+        const title = document.getElementById('title').value;
+        const description = document.getElementById('description').value;
+        const icon = document.getElementById('image-icon').value || (type === 'work' ? 'fa-palette' : (type === 'writing' ? 'fa-pen-nib' : 'fa-font'));
+        const newItem = { title, description, icon };
+        if(type === 'work') portfolioData.work.unshift(newItem);
+        else if(type === 'writing') portfolioData.writing.unshift(newItem);
+        else if(type === 'font') portfolioData.fonts.unshift(newItem);
+        saveAndRender();
+        document.getElementById('upload-form').reset();
+        alert(`${title} added!`);
+    });
+    
+    renderModels(); renderWork(); renderWriting(); renderFonts();
+    document.querySelector('.menu-btn').addEventListener('click', () => { const navLinks = document.querySelector('.nav-links');
+        if(navLinks.style.display === 'flex') navLinks.style.display = 'none'; else navLinks.style.display = 'flex';
+    });
+    window.addEventListener('load', () => { setTimeout(() => { const loader = document.getElementById('loader'); if(loader) loader.style.opacity = '0'; setTimeout(() => loader?.remove(), 500); }, 800); });
+</script>
 </body>
 </html>
